@@ -254,3 +254,7 @@ h2 { font-size: clamp(36px, 4.6vw, 58px); margin-bottom: 22px; }
   html { scroll-behavior: auto; }
   *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
+/* VIDEO FIX */
+.video-frame{aspect-ratio:9/16}
+.video-frame::before{display:none}
+.payment-note{margin-top:0}
