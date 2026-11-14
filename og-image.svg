@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="1200" height="630" viewBox="0 0 1200 630">
+
+  <defs>
+    <radialGradient id="glow">
+      <stop offset="0%" stop-color="#173d45"/>
+      <stop offset="100%" stop-color="#090d12"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="#090d12"/>
+
+  <circle cx="850" cy="310" r="330" fill="url(#glow)"/>
+
+  <g fill="none" stroke="#61e6f2" opacity=".4">
+    <ellipse cx="850" cy="310" rx="300" ry="180"
+             transform="rotate(-25 850 310)"/>
+    <ellipse cx="850" cy="310" rx="220" ry="290"
+             transform="rotate(35 850 310)"/>
+  </g>
+
+  <text x="90" y="180" fill="#61e6f2"
+        font-family="Arial" font-size="24" letter-spacing="8">
+    INDEPENDENT CREATIVE STUDIO
+  </text>
+
+  <text x="90" y="330" fill="#ffffff"
+        font-family="Arial" font-size="92" font-weight="bold">
+    SOHEL
+  </text>
+
+  <text x="90" y="430" fill="#61e6f2"
+        font-family="Arial" font-size="92" font-weight="bold">
+    VISUALS
+  </text>
+
+  <text x="95" y="505" fill="#aab6c1"
+        font-family="Arial" font-size="28">
+    AI-powered ads · Creative visuals · Digital solutions
+  </text>
+
+  <text x="850" y="355" text-anchor="middle"
+        fill="#61e6f2" font-family="Arial"
+        font-size="116" font-weight="bold">
+    SV
+  </text>
+</svg>
