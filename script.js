@@ -1,145 +1,137 @@
-document.addEventListener("DOMContentLoaded", function () {
+(() => {
   "use strict";
 
-  var WHATSAPP_NUMBER = "8801783576503";
-  var menuToggle = document.getElementById("menuToggle");
-  var mainNav = document.getElementById("mainNav");
-  var year = document.getElementById("currentYear");
-  var projectForm = document.getElementById("projectForm");
-  var formStatus = document.getElementById("formStatus");
-  var selectedPackage = "";
+  const menu = document.getElementById("menuToggle");
+  const nav = document.getElementById("nav");
 
-  if (year) {
-    year.textContent = String(new Date().getFullYear());
+  // Mobile navigation
+  function closeMenu() {
+    if (!menu || !nav) return;
+    nav.classList.remove("open");
+    menu.setAttribute("aria-expanded", "false");
+    menu.setAttribute("aria-label", "Open menu");
   }
 
-  // Mobile navigation: CSS opens the menu with the "open" class.
-  function setMenuOpen(isOpen) {
-    if (!menuToggle || !mainNav) return;
-    mainNav.classList.toggle("open", isOpen);
-    menuToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
-    menuToggle.setAttribute(
-      "aria-label",
-      isOpen ? "Close navigation" : "Open navigation"
-    );
-  }
-
-  if (menuToggle && mainNav) {
-    menuToggle.addEventListener("click", function () {
-      setMenuOpen(!mainNav.classList.contains("open"));
+  if (menu && nav) {
+    menu.addEventListener("click", () => {
+      const open = nav.classList.toggle("open");
+      menu.setAttribute("aria-expanded", String(open));
+      menu.setAttribute("aria-label", open ? "Close menu" : "Open menu");
     });
 
-    mainNav.querySelectorAll("a").forEach(function (link) {
-      link.addEventListener("click", function () {
-        setMenuOpen(false);
-      });
+    nav.querySelectorAll("a").forEach(link => {
+      link.addEventListener("click", closeMenu);
     });
 
-    window.addEventListener("resize", function () {
-      if (window.innerWidth > 850) setMenuOpen(false);
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape") closeMenu();
     });
 
-    document.addEventListener("keydown", function (event) {
-      if (event.key === "Escape") setMenuOpen(false);
+    document.addEventListener("click", event => {
+      if (
+        nav.classList.contains("open") &&
+        !nav.contains(event.target) &&
+        !menu.contains(event.target)
+      ) closeMenu();
     });
   }
 
-  // Load Google Drive preview only after the visitor taps a video card.
-  document.querySelectorAll(".video-load").forEach(function (button) {
-    button.addEventListener("click", function () {
-      var videoId = button.getAttribute("data-video-id");
-      var frame = button.closest(".video-frame");
-      if (!videoId || !frame || frame.querySelector("iframe")) return;
+  // Click-to-load portfolio videos
+  document.querySelectorAll(".video-load").forEach(button => {
+    button.addEventListener("click", () => {
+      const frame = button.closest(".video-frame");
+      const id = frame?.dataset.video;
 
-      var iframe = document.createElement("iframe");
+      if (!id) return;
+
+      const iframe = document.createElement("iframe");
       iframe.src =
         "https://drive.google.com/file/d/" +
-        encodeURIComponent(videoId) +
+        encodeURIComponent(id) +
         "/preview";
-      iframe.title = button.getAttribute("aria-label") || "Portfolio video";
+
+      iframe.title = "Sohel Visuals portfolio video";
       iframe.loading = "lazy";
       iframe.allow = "autoplay; fullscreen; picture-in-picture";
-      iframe.setAttribute("allowfullscreen", "");
+      iframe.allowFullscreen = true;
       iframe.referrerPolicy = "strict-origin-when-cross-origin";
 
-      frame.appendChild(iframe);
-      button.remove();
+      frame.replaceChildren(iframe);
     });
   });
 
-  // Package links prefill duration and preserve the selected package in the inquiry.
-  document.querySelectorAll("[data-package]").forEach(function (link) {
-    link.addEventListener("click", function () {
-      selectedPackage = link.getAttribute("data-package") || "";
-      if (!projectForm) return;
+  // Package selection
+  const packageField = document.getElementById("packageField");
 
-      var durationField = projectForm.elements.namedItem("duration");
-      var serviceField = projectForm.elements.namedItem("service");
-
-      if (serviceField && !serviceField.value) {
-        serviceField.value = "AI product advertisement";
+  document.querySelectorAll(".choose-package").forEach(button => {
+    button.addEventListener("click", () => {
+      if (packageField) {
+        packageField.value = button.dataset.package || "";
       }
 
-      if (durationField) {
-        if (/15 seconds/i.test(selectedPackage)) durationField.value = "15 seconds";
-        else if (/30 seconds/i.test(selectedPackage)) durationField.value = "30 seconds";
-        else if (/60 seconds/i.test(selectedPackage)) durationField.value = "60 seconds";
+      document.getElementById("contact")?.scrollIntoView({
+        behavior: "smooth"
+      });
+    });
+  });
+
+  // Service selection
+  const serviceField = document.getElementById("serviceField");
+
+  document.querySelectorAll(".service-card").forEach(card => {
+    card.addEventListener("click", () => {
+      if (serviceField) {
+        serviceField.value = card.dataset.service || "";
       }
     });
   });
 
-  // Form creates a message; it does not collect or store personal information.
-  if (projectForm) {
-    projectForm.addEventListener("submit", function (event) {
+  // WhatsApp inquiry
+  const form = document.getElementById("projectForm");
+
+  if (form) {
+    form.addEventListener("submit", event => {
       event.preventDefault();
 
-      if (!projectForm.reportValidity()) return;
+      if (!form.reportValidity()) return;
 
-      var fields = projectForm.elements;
-      var nameField = fields.namedItem("name");
-      var serviceField = fields.namedItem("service");
-      var durationField = fields.namedItem("duration");
-      var budgetField = fields.namedItem("budget");
-      var briefField = fields.namedItem("brief");
+      const data = new FormData(form);
 
-      var lines = [
-        "Project inquiry — Sohel Visuals",
+      const name = String(data.get("name") || "").trim();
+      const service = String(data.get("service") || "").trim();
+      const brief = String(data.get("brief") || "").trim();
+      const selectedPackage = String(data.get("package") || "").trim();
+
+      const message = [
+        "SOHEL VISUALS — PROJECT INQUIRY",
         "",
-        "Name: " + (nameField ? nameField.value.trim() : ""),
-        "Project type: " + (serviceField ? serviceField.value : "")
-      ];
-
-      if (durationField && durationField.value) {
-        lines.push("Preferred duration: " + durationField.value);
-      }
-      if (selectedPackage) {
-        lines.push("Selected package: " + selectedPackage);
-      }
-      if (budgetField && budgetField.value.trim()) {
-        lines.push("Approximate budget: " + budgetField.value.trim());
-      }
-
-      lines.push(
+        "Name: " + name,
+        "Service: " + service,
+        "Package: " + (selectedPackage || "Not selected"),
         "",
         "Project details:",
-        briefField ? briefField.value.trim() : ""
-      );
+        brief,
+        "",
+        "Please share the next steps."
+      ].join("\n");
 
-      var whatsappUrl =
-        "https://wa.me/" +
-        WHATSAPP_NUMBER +
-        "?text=" +
-        encodeURIComponent(lines.join("\n"));
+      const url =
+        "https://wa.me/8801783576503?text=" +
+        encodeURIComponent(message);
 
-      if (formStatus) {
-        formStatus.textContent =
-          "Opening WhatsApp. Review your message there and press Send to submit your inquiry.";
+      const status = document.getElementById("formStatus");
+
+      if (status) {
+        status.textContent =
+          "Opening WhatsApp. Review your message and press Send.";
       }
 
-      var newWindow = window.open(whatsappUrl, "_blank", "noopener,noreferrer");
-      if (!newWindow) {
-        window.location.href = whatsappUrl;
-      }
+      window.location.href = url;
     });
   }
-});
+
+  // Footer year
+  const year = document.getElementById("year");
+  if (year) year.textContent = new Date().getFullYear();
+
+})();
