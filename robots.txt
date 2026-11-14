@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://sohelaistudio8-blip.github.io/sohelvisuals/sitemap.xml
